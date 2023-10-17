@@ -6,19 +6,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
-public class Escalacion extends Pixel implements ActionListener {
-
+public class Escalacion extends JPanel implements ActionListener {
     private BufferedImage buffer;
     private Graphics2D graPixel;
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
     private int centerX, centerY;
-    private int radius = 20; 
+    private int radius = 20;
     private double[][] circleVertices;
     private double[][] transformationMatrix;
     private Color backgroundColor = Color.BLACK;
-    private Color circleColor = Color.GREEN;
+    private Color circleColor = Color.RED;
     private Timer timer;
+    private double scale = 1.0;
+    private boolean growing = true; 
 
     public Escalacion() {
         buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -27,10 +28,10 @@ public class Escalacion extends Pixel implements ActionListener {
         centerX = WIDTH / 2;
         centerY = HEIGHT / 2;
 
-        transformationMatrix = new double[][]{
-            {1.0, 0.0, 0.0},
-            {0.0, 1.0, 0.0},
-            {0.0, 0.0, 1.0}
+        transformationMatrix = new double[][] {
+                { 1.0, 0.0, 0.0 },
+                { 0.0, 1.0, 0.0 },
+                { 0.0, 0.0, 1.0 }
         };
 
         timer = new Timer(100, this);
@@ -62,10 +63,20 @@ public class Escalacion extends Pixel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        transformationMatrix[0][0] += 0.1;
-        transformationMatrix[1][1] += 0.1;
+        if (growing) {
+            scale += 0.1;
+        } else {
+            scale -= 0.1;
+        }
 
-        radius += 5;
+        if (scale >= 2.0 || scale <= 0.1) {
+            growing = !growing;
+        }
+
+        transformationMatrix[0][0] = scale;
+        transformationMatrix[1][1] = scale;
+
+        radius = (int) (20 * scale);
 
         repaint();
     }
@@ -88,7 +99,7 @@ public class Escalacion extends Pixel implements ActionListener {
             double angle = Math.toRadians(i * (360.0 / numVertices));
             double x = radius * Math.cos(angle);
             double y = radius * Math.sin(angle);
-            circleVertices[i] = new double[]{x, y, 1.0};
+            circleVertices[i] = new double[] { x, y, 1.0 };
         }
     }
 
@@ -107,7 +118,7 @@ public class Escalacion extends Pixel implements ActionListener {
             }
         }
     }
-    
+
     private double[] multiplyMatrixAndPoint(double[][] matrix, double[] point) {
         int rows = matrix.length;
         int cols = matrix[0].length;
