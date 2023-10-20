@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 public class Rotacion extends Pixel implements ActionListener {
-    
+
     private BufferedImage buffer;
     private Graphics2D graPixel;
     private static final int WIDTH = 500;
@@ -27,10 +27,10 @@ public class Rotacion extends Pixel implements ActionListener {
         timer.start();
 
         rectangleVertices = new double[][]{
-                {-RECT_WIDTH / 2, -RECT_HEIGHT / 2, 1},
-                {RECT_WIDTH / 2, -RECT_HEIGHT / 2, 1},
-                {RECT_WIDTH / 2, RECT_HEIGHT / 2, 1},
-                {-RECT_WIDTH / 2, RECT_HEIGHT / 2, 1}
+            {-RECT_WIDTH / 2, -RECT_HEIGHT / 2, 1},
+            {RECT_WIDTH / 2, -RECT_HEIGHT / 2, 1},
+            {RECT_WIDTH / 2, RECT_HEIGHT / 2, 1},
+            {-RECT_WIDTH / 2, RECT_HEIGHT / 2, 1}
         };
     }
 
@@ -49,15 +49,15 @@ public class Rotacion extends Pixel implements ActionListener {
         int centerY = HEIGHT / 2;
 
         double[][] rotationMatrix = {
-                {Math.cos(angle), -Math.sin(angle), 0},
-                {Math.sin(angle), Math.cos(angle), 0},
-                {0, 0, 1}
+            {Math.cos(angle), -Math.sin(angle), 0},
+            {Math.sin(angle), Math.cos(angle), 0},
+            {0, 0, 1}
         };
 
         double[][] translationMatrix = {
-                {1, 0, translateX},
-                {0, 1, translateY},
-                {0, 0, 1}
+            {1, 0, translateX},
+            {0, 1, translateY},
+            {0, 0, 1}
         };
 
         double[][] transformationMatrix = multiplyMatrices(rotationMatrix, translationMatrix);
@@ -71,8 +71,7 @@ public class Rotacion extends Pixel implements ActionListener {
             yPoints[i] = (int) (transformedVertex[1] + centerY);
         }
 
-        graPixel.setColor(Color.RED);
-        graPixel.fillPolygon(xPoints, yPoints, xPoints.length);
+        fillPolygon(xPoints, yPoints, Color.RED);
 
         angle += Math.toRadians(5);
 
@@ -122,6 +121,49 @@ public class Rotacion extends Pixel implements ActionListener {
         }
 
         return result;
+    }
+
+    private void fillPolygon(int[] xPoints, int[] yPoints, Color fillColor) {
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        for (int y : yPoints) {
+            if (y < minY) {
+                minY = y;
+            }
+            if (y > maxY) {
+                maxY = y;
+            }
+        }
+
+        for (int y = minY; y <= maxY; y++) {
+            int x1 = Integer.MAX_VALUE;
+            int x2 = Integer.MIN_VALUE;
+
+            for (int i = 0; i < xPoints.length; i++) {
+                int j = (i + 1) % xPoints.length;
+                int xi = xPoints[i];
+                int xj = xPoints[j];
+                int yi = yPoints[i];
+                int yj = yPoints[j];
+
+                if ((yi <= y && yj > y) || (yj <= y && yi > y)) {
+                    int x = (int) (xi + (double) (y - yi) / (double) (yj - yi) * (xj - xi));
+                    if (x < x1) {
+                        x1 = x;
+                    }
+                    if (x > x2) {
+                        x2 = x;
+                    }
+                }
+            }
+
+            if (x1 <= x2) {
+                for (int x = x1; x <= x2; x++) {
+                    putPixel(x, y, fillColor);
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
