@@ -8,6 +8,19 @@ public class Pixel extends JComponent {
 
     private final BufferedImage bufferedPixel = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
     private BufferedImage bufferedImage;
+    
+    Color sky = new Color(31, 141, 189);
+    Color white = new Color(255, 255, 255);
+    Color ladrillo = new Color(220, 90, 33);
+    Color black = new Color(0, 0, 0);
+    Color pastos = new Color(71, 172, 59);
+    Color pastoSeco = new Color(145, 213, 27);
+    Color moneda = new Color(255, 198, 2);
+    Color ladrillo2 = new Color(47, 182, 163);
+    Color tubo = new Color(15, 254, 0);
+    Color rojo = new Color(255, 4, 0);
+    Color piel = new Color(231, 209, 150);
+    Color pelo = new Color(157, 127, 45);
 
     private static int[][] matrizPixels = {
         {0, 0, 0, 0, 0},
@@ -206,10 +219,10 @@ public class Pixel extends JComponent {
 
             pixelY = 100 - pixelY;
 
-            putPixel(pixelX, pixelY, Color.BLUE);
+            putPixel(pixelX, pixelY, Color.WHITE);
 
             if (!firstPoint) {
-                drawLine(prevPixelX, prevPixelY, pixelX, pixelY, Color.BLUE);
+                drawLine(prevPixelX, prevPixelY, pixelX, pixelY, Color.WHITE);
             } else {
                 firstPoint = false;
             }
@@ -225,13 +238,13 @@ public class Pixel extends JComponent {
         for (double y = 0; y <= 2 * Math.PI; y += 0.01) {
             double x = y * Math.cos(4 * y);
 
-            int pixelX = (int) (x * 10) + getWidth() / 2;
-            int pixelY = (int) (y * 10) + 300;
+            int pixelX = (int) (x * 10) + 100;
+            int pixelY = (int) (y * 10) + 100;
 
             // Invierte pixelY para dibujar de arriba hacia abajo
             pixelY = getHeight() - pixelY;
 
-            putPixel(pixelX, pixelY, Color.BLUE);
+            putPixel(pixelX, pixelY, ladrillo2);
         }
     }
 
@@ -248,13 +261,13 @@ public class Pixel extends JComponent {
             double x = Math.cos(t) + (1.0 / 2.0) * Math.cos(7 * t) + (1.0 / 3.0) * Math.sin(17 * t);
             double y = Math.sin(t) + (1.0 / 2.0) * Math.sin(7 * t) + (1.0 / 3.0) * Math.cos(17 * t);
 
-            int pixelX = (int) (x * 100) + getWidth() / 2;
-            int pixelY = (int) (y * 100) + getHeight() / 2;
+            int pixelX = (int) (x * 20) + 250;
+            int pixelY = (int) (y * 20) + 50;
 
-            putPixel(pixelX, pixelY, Color.RED);
+            putPixel(pixelX, pixelY, Color.WHITE);
 
             if (!firstPoint) {
-                drawLine(prevPixelX, prevPixelY, pixelX, pixelY, Color.RED);
+                drawLine(prevPixelX, prevPixelY, pixelX, pixelY, Color.WHITE);
             } else {
                 firstPoint = false;
             }
