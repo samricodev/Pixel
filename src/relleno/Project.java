@@ -1,9 +1,13 @@
 package relleno;
 
-import java.awt.Font;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -11,13 +15,31 @@ import javax.swing.Timer;
 public class Project extends Pixel implements ActionListener {
 
     private int currentTime = 0;
+    private double coinScale = 1.0;
+    private boolean coinScalingUp = true;
+    private int marioX = 0;
+    private BufferedImage rotatedSquare;
+    private double rotationAngle = 0;
+    
+    private Traslacion traslacion;
+    private Rotacion rotacion;
+    private Escalacion escalacion;
 
     public Project() {
-
+        traslacion = new Traslacion();
+        rotacion = new Rotacion();
+        escalacion = new Escalacion();
+        
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 currentTime++;
+                updateCoinScale();
+                if (marioX >= 590) {
+                    marioX = 0;
+                }
+                marioX += (int) (getWidth() / 30);
+                rotationAngle += Math.toRadians(10);
                 repaint();
             }
         });
@@ -25,8 +47,32 @@ public class Project extends Pixel implements ActionListener {
         timer.start();
     }
 
+    private void updateCoinScale() {
+        if (coinScalingUp) {
+            coinScale += 0.2;
+            if (coinScale >= 1.2) {
+                coinScalingUp = false;
+            }
+        } else {
+            coinScale -= 0.2;
+            if (coinScale <= 0.8) {
+                coinScalingUp = true;
+            }
+        }
+    }
+
+    public void drawCoins(Graphics g) {
+        int coinSize = (int) (10 * coinScale);
+
+        fillEllipse(220, 370, coinSize, coinSize + 10, moneda);
+        fillEllipse(190, 370, coinSize, coinSize + 10, moneda);
+        fillEllipse(160, 370, coinSize, coinSize + 10, moneda);
+
+        g.drawImage(getBufferedImage(), 0, 0, null);
+    }
+
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Projecto");
+        JFrame frame = new JFrame("Mario Bros - Remasterizado a Feo");
 
         Project project = new Project();
         frame.add(project);
@@ -40,28 +86,67 @@ public class Project extends Pixel implements ActionListener {
 
     }
 
+    public void createRotatedSquare(int width, int height, Color color) {
+        BufferedImage squareImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = squareImage.createGraphics();
+
+        // Dibuja un cuadrado en el BufferedImage
+        g2d.setColor(color);
+        g2d.fillRect(0, 0, width, height);
+
+        g2d.dispose();
+
+        // Luego, rota el BufferedImage
+        double centerX = width / 2.0;
+        double centerY = height / 2.0;
+        AffineTransform transform = new AffineTransform();
+        transform.rotate(rotationAngle, centerX, centerY);
+
+        AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+        rotatedSquare = op.filter(squareImage, null);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
-        if (currentTime < 5) {
-            // Llama al método world1 durante los primeros 30 segundos
+
+        if (currentTime < 30) {
             world1(g);
-        } else if (currentTime < 10) {
-            // Llama al método world2 durante los segundos 31-60
+        } else if (currentTime < 65) {
             world2(g);
-        } else if (currentTime < 15) {
+        } else if (currentTime < 90) {
             world3(g);
-        } else if (currentTime < 20){
+        } else if (currentTime < 100) {
             finish(g);
-        }else {
+        } else {
             System.exit(0);
         }
+
+        if (currentTime >= 0 && currentTime < 90) {
+            drawCoins(g);
+            mario(g, marioX);
+            createRotatedSquare(20, 20, pelo);
+
+            int x1 = (getWidth() - rotatedSquare.getWidth()) - 190;
+            int y1 = (getHeight() - rotatedSquare.getHeight() - 60);
+
+            int x2 = (getWidth() - rotatedSquare.getWidth()) - 220;
+            int y2 = (getHeight() - rotatedSquare.getHeight() - 60);
+
+            int x3 = (getWidth() - rotatedSquare.getWidth()) - 250;
+            int y3 = (getHeight() - rotatedSquare.getHeight() - 60);
+
+            g.drawImage(rotatedSquare, x1, y1, this);
+            g.drawImage(rotatedSquare, x2, y2, this);
+            g.drawImage(rotatedSquare, x3, y3, this);
+        }
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        rotationAngle += 0.1;
+        repaint();
     }
 
     public void world1(Graphics g) {
@@ -93,14 +178,11 @@ public class Project extends Pixel implements ActionListener {
 
         //Pastisales
         fillTriangle(20, 399, 50, 350, 80, 399, pastos);
+        fillTriangle(60, 399, 90, 350, 120, 399, pastos);
 
-        fillTriangle(200, 399, 220, 350, 240, 399, pastoSeco);
-        fillTriangle(220, 399, 240, 350, 260, 399, pastoSeco);
-        fillTriangle(240, 399, 260, 350, 280, 399, pastoSeco);
-
-        fillCircle(400, 379, 20, pastoSeco);
-        fillCircle(420, 379, 20, pastoSeco);
         fillCircle(440, 379, 20, pastoSeco);
+        fillCircle(460, 379, 20, pastoSeco);
+        fillCircle(480, 379, 20, pastoSeco);
 
         //Barras
         fillRectangle(150, 250, 190, 290, moneda);
@@ -175,7 +257,7 @@ public class Project extends Pixel implements ActionListener {
         fillCircle(400, 40, 20, white);
         fillCircle(420, 40, 25, white);
         fillCircle(440, 40, 20, white);
-        
+
         drawInfinitySymbol(250, 50, 30, white);
 
         //Piso
@@ -189,7 +271,7 @@ public class Project extends Pixel implements ActionListener {
 
         //Pastisales
         fillTriangle(20, 399, 50, 350, 80, 399, pastos);
-        
+
         //Bandera
         fillRectangle(252, 150, 258, 380, tubo);
         drawRect(252, 150, 258, 380, black);
@@ -198,43 +280,39 @@ public class Project extends Pixel implements ActionListener {
         fillCircle(255, 145, 5, tubo);
         drawCircle(255, 145, 5, black);
         fillTriangle(230, 145, 249, 135, 249, 155, white);
-        
+
         //Castillo
         fillRectangle(400, 150, 500, 200, ladrillo);
         fillRectangle(420, 160, 440, 170, black);
         fillRectangle(460, 160, 480, 170, black);
         drawRect(400, 150, 500, 200, black);
-        for(int i = 400; i < 500; i += 20){
+        for (int i = 400; i < 500; i += 20) {
             drawLine(i, 150, i, 200, black);
         }
-        
-        for(int i = 150; i < 200; i+=10){
+
+        for (int i = 150; i < 200; i += 10) {
             drawLine(400, i, 500, i, black);
         }
-        
+
         fillRectangle(350, 200, 550, 400, ladrillo);
         drawRect(350, 200, 550, 400, black);
         fillEllipse(450, 300, 50, 50, black);
         fillRectangle(400, 300, 500, 400, black);
-        for(int i = 350; i < 550; i += 20){
+        for (int i = 350; i < 550; i += 20) {
             drawLine(i, 200, i, 400, black);
         }
-        
-        for(int i = 200; i < 400; i+=10){
+
+        for (int i = 200; i < 400; i += 10) {
             drawLine(350, i, 550, i, black);
         }
 
         g.drawImage(getBufferedImage(), 0, 0, null);
     }
-    
-    public void finish(Graphics g){
+
+    public void finish(Graphics g) {
         fillRectangle(0, 0, 600, 500, black);
         setBackgroundColor(black);
-        
-        g.setColor(white); 
-        g.setFont(new Font("Arial", Font.BOLD, 36));
-        g.drawString("Game Over", 300, 350);
-       
+
         //Gorra
         fillRectangle(190, 200, 250, 210, rojo);
         fillRectangle(180, 210, 280, 220, rojo);
@@ -258,24 +336,74 @@ public class Project extends Pixel implements ActionListener {
         fillRectangle(190, 300, 200, 310, piel);
         fillRectangle(220, 280, 230, 300, rojo);
         fillRectangle(220, 300, 230, 310, piel);
-        
+
         //Brazos
         fillRectangle(170, 290, 180, 320, pelo);
         fillRectangle(240, 290, 250, 320, pelo);
         fillRectangle(170, 320, 180, 340, piel);
         fillRectangle(240, 320, 250, 340, piel);
-        
+
         //Piernas
         fillRectangle(180, 350, 200, 380, rojo);
         fillRectangle(220, 350, 240, 380, rojo);
-        
+
         //Botas
         fillRectangle(170, 380, 200, 400, pelo);
         fillRectangle(220, 380, 250, 400, pelo);
-        
+
         fillRectangle(160, 390, 170, 400, pelo);
         fillRectangle(260, 390, 250, 400, pelo);
-        
+
         g.drawImage(getBufferedImage(), 0, 0, null);
+    }
+
+    public void mario(Graphics g, int x) {
+        // Gorra
+        fillRectangle(x + 25, 305, x + 35, 310, rojo);
+        fillRectangle(x + 20, 310, x + 40, 315, rojo);
+        // Cara
+        fillRectangle(x + 20, 315, x + 35, 345, piel);
+        // Nariz
+        fillRectangle(x + 35, 320, x + 40, 325, piel);
+        fillRectangle(x + 35, 325, x + 45, 330, piel);
+        // Ojo
+        fillRectangle(x + 25, 315, x + 30, 320, pelo);
+        // Pelo
+        fillRectangle(x + 15, 315, x + 20, 335, pelo);
+        fillRectangle(x + 20, 315, x + 25, 320, pelo);
+        // Bigote
+        fillRectangle(x + 25, 330, x + 35, 335, pelo);
+        // Cuello
+        fillRectangle(x + 20, 345, x + 25, 350, piel);
+        // Torso
+        fillRectangle(x + 20, 350, x + 25, 375, rojo);
+        fillRectangle(x + 25, 345, x + 30, 360, rojo);
+        fillRectangle(x + 25, 360, x + 30, 365, piel);
+        fillRectangle(x + 25, 365, x + 30, 370, piel);
+
+        // Brazos
+        fillRectangle(x + 15, 350, x + 20, 360, piel);
+        fillRectangle(x + 25, 350, x + 30, 360, piel);
+        fillRectangle(x + 15, 360, x + 20, 370, rojo);
+        fillRectangle(x + 25, 360, x + 30, 370, rojo);
+
+        // Piernas
+        fillRectangle(x + 20, 375, x + 25, 390, rojo);
+        fillRectangle(x + 25, 375, x + 30, 390, rojo);
+
+        // Botas
+        fillRectangle(x + 15, 390, x + 20, 395, piel);
+        fillRectangle(x + 25, 390, x + 30, 395, piel);
+
+        fillRectangle(x + 10, 395, x + 15, 400, piel);
+        fillRectangle(x + 30, 395, x + 35, 400, piel);
+
+        g.drawImage(getBufferedImage(), 0, 0, null);
+    }
+    
+    public void dxdy(){
+        traslacion.clear();
+        rotacion.clear();
+        escalacion.createImage(0, 0);
     }
 }
