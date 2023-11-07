@@ -8,7 +8,7 @@ public class Pixel extends JComponent {
 
     private final BufferedImage bufferedPixel = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
     private BufferedImage bufferedImage;
-    
+
     Color sky = new Color(31, 141, 189);
     Color white = new Color(255, 255, 255);
     Color ladrillo = new Color(220, 90, 33);
@@ -177,6 +177,38 @@ public class Pixel extends JComponent {
         drawLine(x0, y0, x3, y3, color);
     }
 
+    public void draw2DCube() {
+        int vp [] = {5, 3, 1};
+        int points[][] = {{3, 2, 2}, {2, 5, 4}, {5, 2, 2}, {5, 4, 3}, {3, 2, 6}, {2, 5, 6}, {5, 3, 6}, {4, 5, 6}};
+        int projectedPoints[][] = new int[8][2];
+
+        for (int i = 0; i < 8; i++) {
+            int u = -(points[i][2] / vp[2]);
+            int x = points[i][0] + vp[0] * u;
+            int y = points[i][1] + vp[1] * u;
+            projectedPoints[i][0] = x;
+            projectedPoints[i][1] = y;
+        }
+        
+        for(int j = 0; j < 7; j++){
+            int p1x = points[j][0];
+            int p1y = points[j][1];
+            int p2x = points[j + 1][1];
+            int p2y = points[j + 1][1];
+            
+            drawLine(p1x, p1y, p2x, p2y, rojo);
+        }
+    }
+
+    public void draw3DCube() {
+        drawRect(100, 100, 200, 200, rojo);
+        drawRect(150, 150, 300, 300, rojo);
+        drawLine(100, 100, 150, 150, rojo);
+        drawLine(100, 200, 150, 300, rojo);
+        drawLine(200, 100, 300, 150, rojo);
+        drawLine(200, 200, 300, 300, rojo);
+    }
+
     //Curvas
     public void drawInfinitySymbol(int centerX, int centerY, int size, Color color) {
         double theta = 0;
@@ -306,21 +338,67 @@ public class Pixel extends JComponent {
         }
     }
 
+    //Churro 2D
+    public void churro2D() {
+        int points = 1000;
+        int scale = 100;
+
+        int vp[] = {0, 3, 30};
+
+        float step = (float) (8 * Math.PI / points);
+
+        for (float t = 0; t < 8 * Math.PI; t += step) {
+            float u = -t / vp[2];
+            float x = (float) (Math.cos(t) + vp[0] * u);
+            float y = (float) (Math.sin(t) + vp[1] * u);
+            x *= scale;
+            y *= scale;
+            putPixel((int) x + getWidth() / 2, (int) y + 400, rojo);
+        }
+    }
+
+    public void churro3D() {
+        int points = 1000;
+        int scale = 50;
+
+        float vpX = 0;
+        float vpY = 3;
+        float vpZ = 30;
+
+        float step = (float) (8 * Math.PI / points);
+
+        for (float t = 0; t < 8 * Math.PI; t += step) {
+            float u = -t / vpZ;
+            float x = (float) (Math.cos(t) + vpX * u);
+            float y = (float) (Math.sin(t) + vpY * u);
+            float z = (float) (vpZ - t);
+
+            float perspectiveFactor = 1 / (1 + z / scale);
+            x *= scale * perspectiveFactor;
+            y *= scale * perspectiveFactor;
+
+            int screenX = (int) x + getWidth() / 2;
+            int screenY = (int) y + 400;
+
+            putPixel(screenX, screenY, rojo);
+        }
+    }
+
     //Mallado
     public void drawMeshFromArrayProduct(int[] array1, int[] array2, int meshSpacing, Color color) {
         int rows1 = array1.length;
         int rows2 = array2.length;
-        
+
         for (int i = 0; i < rows1; i++) {
             for (int j = 0; j < rows2; j++) {
                 int pixelX = array1[i] * meshSpacing;
                 int pixelY = array2[j] * meshSpacing;
-                
+
                 int endX = pixelX + meshSpacing;
                 for (int x = pixelX; x < endX; x++) {
                     putPixel(x, pixelY, color);
                 }
-                
+
                 int endY = pixelY + meshSpacing;
                 for (int y = pixelY; y < endY; y++) {
                     putPixel(pixelX, y, color);
@@ -328,7 +406,7 @@ public class Pixel extends JComponent {
             }
         }
     }
-    
+
     //Rellenos
     public static void floodFill(int x, int y, int color, int newColor) {
         int rows = matrizPixels.length;

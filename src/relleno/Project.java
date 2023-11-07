@@ -30,18 +30,15 @@ public class Project extends Pixel implements ActionListener {
         rotacion = new Rotacion();
         escalacion = new Escalacion();
         
-        Timer timer = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentTime++;
-                updateCoinScale();
-                if (marioX >= 590) {
-                    marioX = 0;
-                }
-                marioX += (int) (getWidth() / 30);
-                rotationAngle += Math.toRadians(10);
-                repaint();
+        Timer timer = new Timer(1000, (ActionEvent e) -> {
+            currentTime++;
+            updateCoinScale();
+            if (marioX >= 590) {
+                marioX = 0;
             }
+            marioX += (int) (getWidth() / 30);
+            rotationAngle += Math.toRadians(10);
+            repaint();
         });
 
         timer.start();
