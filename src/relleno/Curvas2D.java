@@ -5,9 +5,10 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-public class Curvas2D extends Pixel{
+public class Curvas2D extends Pixel {
+
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Curvas");
+        JFrame frame = new JFrame("Curvas 3D a 2D");
 
         Curvas2D canvas = new Curvas2D();
         frame.add(canvas);
@@ -26,8 +27,8 @@ public class Curvas2D extends Pixel{
 
         setBackgroundColor(Color.BLACK);
         
-        draw2DCube();
-        
+        churro2D();
+
         g.drawImage(getBufferedImage(), 0, 0, null);
     }
 }

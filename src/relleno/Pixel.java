@@ -30,7 +30,7 @@ public class Pixel extends JComponent {
         {0, 0, 0, 0, 0}
     };
 
-    private void putPixel(int x, int y, Color color) {
+    protected void putPixel(int x, int y, Color color) {
         bufferedPixel.setRGB(0, 0, color.getRGB());
         if (bufferedImage != null) {
             bufferedImage.getGraphics().drawImage(bufferedPixel, x, y, this);
@@ -177,36 +177,201 @@ public class Pixel extends JComponent {
         drawLine(x0, y0, x3, y3, color);
     }
 
-    public void draw2DCube() {
-        int vp [] = {5, 3, 1};
-        int points[][] = {{3, 2, 2}, {2, 5, 4}, {5, 2, 2}, {5, 4, 3}, {3, 2, 6}, {2, 5, 6}, {5, 3, 6}, {4, 5, 6}};
+    public void drawParalelaCube() {
+        int vp[] = {5, 5, 500};
+        int points[][] = {
+            {300, 200, 200},
+            {300, 400, 300},
+            {500, 200, 200},
+            {500, 400, 300},
+            {200, 300, 200},
+            {200, 500, 400},
+            {400, 300, 200},
+            {400, 500, 400}};
+
         int projectedPoints[][] = new int[8][2];
 
         for (int i = 0; i < 8; i++) {
-            int u = -(points[i][2] / vp[2]);
-            int x = points[i][0] + vp[0] * u;
-            int y = points[i][1] + vp[1] * u;
-            projectedPoints[i][0] = x;
-            projectedPoints[i][1] = y;
+            int u = (-points[i][2]) / vp[2];
+            projectedPoints[i][0] = points[i][0] + (vp[0] * u);
+            projectedPoints[i][1] = points[i][1] + (vp[1] * u);
         }
-        
-        for(int j = 0; j < 7; j++){
-            int p1x = points[j][0];
-            int p1y = points[j][1];
-            int p2x = points[j + 1][1];
-            int p2y = points[j + 1][1];
-            
-            drawLine(p1x, p1y, p2x, p2y, rojo);
+
+        drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
+        drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[4][0], projectedPoints[4][1], rojo);
+        drawLine(projectedPoints[2][0], projectedPoints[2][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+        drawLine(projectedPoints[4][0], projectedPoints[4][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+
+        drawLine(projectedPoints[5][0], projectedPoints[5][1], projectedPoints[7][0], projectedPoints[7][1], rojo);
+        drawLine(projectedPoints[5][0], projectedPoints[5][1], projectedPoints[1][0], projectedPoints[1][1], rojo);
+        drawLine(projectedPoints[1][0], projectedPoints[1][1], projectedPoints[3][0], projectedPoints[3][1], rojo);
+        drawLine(projectedPoints[7][0], projectedPoints[7][1], projectedPoints[3][0], projectedPoints[3][1], rojo);
+
+        drawLine(projectedPoints[4][0], projectedPoints[4][1], projectedPoints[5][0], projectedPoints[5][1], rojo);
+        drawLine(projectedPoints[3][0], projectedPoints[3][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
+        drawLine(projectedPoints[1][0], projectedPoints[1][1], projectedPoints[0][0], projectedPoints[0][1], rojo);
+        drawLine(projectedPoints[7][0], projectedPoints[7][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+
+        for (int i = 0; i < 8; i++) {
+            int p1x = projectedPoints[i][0];
+            int p1y = projectedPoints[i][1];
+            putPixel(p1x, p1y, sky);
         }
     }
 
-    public void draw3DCube() {
-        drawRect(100, 100, 200, 200, rojo);
-        drawRect(150, 150, 300, 300, rojo);
-        drawLine(100, 100, 150, 150, rojo);
-        drawLine(100, 200, 150, 300, rojo);
-        drawLine(200, 100, 300, 150, rojo);
-        drawLine(200, 200, 300, 300, rojo);
+    public void drawPerspectivaCube() {
+        int vp[] = {20, 20, 500};
+        int points[][] = {
+            {100, 100, 100},
+            {100, 300, 100},
+            {300, 100, 100},
+            {300, 300, 100},
+            {100, 100, 300},
+            {100, 300, 300},
+            {300, 100, 300},
+            {300, 300, 300}};
+
+        int projectedPoints[][] = new int[8][2];
+
+        for (int i = 0; i < 8; i++) {
+            int u = (-vp[2]) / (points[i][2] - vp[2]);
+            projectedPoints[i][0] = points[i][0] + (vp[0] * u);
+            projectedPoints[i][1] = points[i][1] + (vp[1] * u);
+        }
+
+        for (int i = 0; i < 8; i++) {
+            int p1x = projectedPoints[i][0];
+            int p1y = projectedPoints[i][1];
+            putPixel(p1x, p1y, rojo);
+        }
+
+        drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
+        drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[4][0], projectedPoints[4][1], rojo);
+        drawLine(projectedPoints[2][0], projectedPoints[2][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+        drawLine(projectedPoints[4][0], projectedPoints[4][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+
+        drawLine(projectedPoints[5][0], projectedPoints[5][1], projectedPoints[7][0], projectedPoints[7][1], rojo);
+        drawLine(projectedPoints[5][0], projectedPoints[5][1], projectedPoints[1][0], projectedPoints[1][1], rojo);
+        drawLine(projectedPoints[1][0], projectedPoints[1][1], projectedPoints[3][0], projectedPoints[3][1], rojo);
+        drawLine(projectedPoints[7][0], projectedPoints[7][1], projectedPoints[3][0], projectedPoints[3][1], rojo);
+
+        drawLine(projectedPoints[4][0], projectedPoints[4][1], projectedPoints[5][0], projectedPoints[5][1], rojo);
+        drawLine(projectedPoints[3][0], projectedPoints[3][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
+        drawLine(projectedPoints[1][0], projectedPoints[1][1], projectedPoints[0][0], projectedPoints[0][1], rojo);
+        drawLine(projectedPoints[7][0], projectedPoints[7][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+    }
+
+    public void fill3DCube() {
+        int vp[] = {5, 5, 30};
+        int points[][] = {
+            {300, 200, 200},
+            {300, 400, 300},
+            {500, 200, 200},
+            {500, 400, 300},
+            {200, 300, 200},
+            {200, 500, 400},
+            {400, 300, 200},
+            {400, 500, 400}
+        };
+
+        int projectedPoints[][] = new int[8][2];
+
+        for (int i = 0; i < 8; i++) {
+            int u = (-points[i][2]) / vp[2];
+            projectedPoints[i][0] = points[i][0] + (vp[0] * u);
+            projectedPoints[i][1] = points[i][1] + (vp[1] * u);
+        }
+
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        for (int i = 0; i < 8; i++) {
+            minY = Math.min(minY, projectedPoints[i][1]);
+            maxY = Math.max(maxY, projectedPoints[i][1]);
+        }
+
+        for (int y = minY; y <= maxY; y++) {
+            int x1 = Integer.MAX_VALUE;
+            int x2 = Integer.MIN_VALUE;
+
+            for (int i = 0; i < 8; i++) {
+                int j = (i + 1) % 8;
+                int y1 = projectedPoints[i][1];
+                int y2 = projectedPoints[j][1];
+
+                if ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
+                    int x = (int) (projectedPoints[i][0] + (y - y1) * 1.0 * (projectedPoints[j][0] - projectedPoints[i][0]) / (y2 - y1));
+                    x1 = Math.min(x1, x);
+                    x2 = Math.max(x2, x);
+                }
+            }
+
+            if (x1 <= x2) {
+                for (int x = x1; x <= x2; x++) {
+                    putPixel(x, y, sky);
+                }
+            }
+        }
+
+        // Llenar las caras restantes
+        fillPolygon(sky, projectedPoints[0], projectedPoints[2], projectedPoints[6], projectedPoints[4]); // Cara frontal
+        fillPolygon(sky, projectedPoints[1], projectedPoints[3], projectedPoints[7], projectedPoints[5]); // Cara trasera
+        fillPolygon(sky, projectedPoints[0], projectedPoints[1], projectedPoints[5], projectedPoints[4]); // Cara izquierda
+        fillPolygon(sky, projectedPoints[2], projectedPoints[3], projectedPoints[7], projectedPoints[6]); // Cara derecha
+        fillPolygon(sky, projectedPoints[4], projectedPoints[6], projectedPoints[7], projectedPoints[5]); // Cara superior
+        fillPolygon(sky, projectedPoints[0], projectedPoints[2], projectedPoints[3], projectedPoints[1]); // Cara inferior
+        
+        drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
+        drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[4][0], projectedPoints[4][1], rojo);
+        drawLine(projectedPoints[2][0], projectedPoints[2][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+        drawLine(projectedPoints[4][0], projectedPoints[4][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+
+        drawLine(projectedPoints[5][0], projectedPoints[5][1], projectedPoints[7][0], projectedPoints[7][1], rojo);
+        drawLine(projectedPoints[5][0], projectedPoints[5][1], projectedPoints[1][0], projectedPoints[1][1], rojo);
+        drawLine(projectedPoints[1][0], projectedPoints[1][1], projectedPoints[3][0], projectedPoints[3][1], rojo);
+        drawLine(projectedPoints[7][0], projectedPoints[7][1], projectedPoints[3][0], projectedPoints[3][1], rojo);
+
+        drawLine(projectedPoints[4][0], projectedPoints[4][1], projectedPoints[5][0], projectedPoints[5][1], rojo);
+        drawLine(projectedPoints[3][0], projectedPoints[3][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
+        drawLine(projectedPoints[1][0], projectedPoints[1][1], projectedPoints[0][0], projectedPoints[0][1], rojo);
+        drawLine(projectedPoints[7][0], projectedPoints[7][1], projectedPoints[6][0], projectedPoints[6][1], rojo);
+    }
+
+    public void fillPolygon(Color color, int[]... vertices) {
+        // Encontrar el mínimo y máximo de la coordenada y para cada línea horizontal
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        for (int[] vertex : vertices) {
+            minY = Math.min(minY, vertex[1]);
+            maxY = Math.max(maxY, vertex[1]);
+        }
+
+        // Iterar sobre cada línea horizontal y llenar los píxeles entre los puntos extremos
+        for (int y = minY; y <= maxY; y++) {
+            int x1 = Integer.MAX_VALUE;
+            int x2 = Integer.MIN_VALUE;
+
+            // Encontrar intersecciones de la línea horizontal con los segmentos del polígono
+            for (int i = 0; i < vertices.length; i++) {
+                int j = (i + 1) % vertices.length;
+                int y1 = vertices[i][1];
+                int y2 = vertices[j][1];
+
+                if ((y1 <= y && y < y2) || (y2 <= y && y < y1)) {
+                    int x = (int) (vertices[i][0] + (y - y1) * 1.0 * (vertices[j][0] - vertices[i][0]) / (y2 - y1));
+                    x1 = Math.min(x1, x);
+                    x2 = Math.max(x2, x);
+                }
+            }
+
+            // Rellenar la línea horizontal entre los puntos extremos
+            if (x1 <= x2) {
+                for (int x = x1; x <= x2; x++) {
+                    putPixel(x, y, color); // Reemplaza 'putPixel' con el método apropiado para asignar el color
+                }
+            }
+        }
     }
 
     //Curvas
@@ -343,7 +508,7 @@ public class Pixel extends JComponent {
         int points = 1000;
         int scale = 100;
 
-        int vp[] = {0, 3, 30};
+        int vp[] = {0, 3, 20};
 
         float step = (float) (8 * Math.PI / points);
 
@@ -351,8 +516,8 @@ public class Pixel extends JComponent {
             float u = -t / vp[2];
             float x = (float) (Math.cos(t) + vp[0] * u);
             float y = (float) (Math.sin(t) + vp[1] * u);
-            x *= scale;
-            y *= scale;
+            x *= 100;
+            y *= 50;
             putPixel((int) x + getWidth() / 2, (int) y + 400, rojo);
         }
     }
