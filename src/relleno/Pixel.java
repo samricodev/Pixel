@@ -320,7 +320,7 @@ public class Pixel extends JComponent {
         fillPolygon(sky, projectedPoints[2], projectedPoints[3], projectedPoints[7], projectedPoints[6]); // Cara derecha
         fillPolygon(sky, projectedPoints[4], projectedPoints[6], projectedPoints[7], projectedPoints[5]); // Cara superior
         fillPolygon(sky, projectedPoints[0], projectedPoints[2], projectedPoints[3], projectedPoints[1]); // Cara inferior
-        
+
         drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[2][0], projectedPoints[2][1], rojo);
         drawLine(projectedPoints[0][0], projectedPoints[0][1], projectedPoints[4][0], projectedPoints[4][1], rojo);
         drawLine(projectedPoints[2][0], projectedPoints[2][1], projectedPoints[6][0], projectedPoints[6][1], rojo);

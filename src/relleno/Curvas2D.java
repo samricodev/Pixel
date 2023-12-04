@@ -27,7 +27,7 @@ public class Curvas2D extends Pixel {
 
         setBackgroundColor(Color.BLACK);
         
-        churro2D();
+        fill3DCube();
 
         g.drawImage(getBufferedImage(), 0, 0, null);
     }
