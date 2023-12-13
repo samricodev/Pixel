@@ -102,13 +102,9 @@ public class Pixel extends JComponent {
     }
 
     public void drawRect(int x0, int y0, int x1, int y1, Color color) {
-        //Top || D->I Bottom
         drawLine(x0, y0, x1, y0, color);
-        //Bottom || D->I Top
         drawLine(x0, y1, x1, y1, color);
-        //Right || D->I Left
         drawLine(x1, y0, x1, y1, color);
-        //Left || D->I Right
         drawLine(x0, y0, x0, y1, color);
     }
 
@@ -177,6 +173,7 @@ public class Pixel extends JComponent {
         drawLine(x0, y0, x3, y3, color);
     }
 
+    //Cubos
     public void drawParalelaCube() {
         int vp[] = {5, 5, 500};
         int points[][] = {
@@ -262,7 +259,7 @@ public class Pixel extends JComponent {
     }
 
     public void fill3DCube() {
-        int vp[] = {5, 5, 30};
+        int vp[] = {2, 2, 50};
         int points[][] = {
             {300, 200, 200},
             {300, 400, 300},
@@ -338,7 +335,6 @@ public class Pixel extends JComponent {
     }
 
     public void fillPolygon(Color color, int[]... vertices) {
-        // Encontrar el mínimo y máximo de la coordenada y para cada línea horizontal
         int minY = Integer.MAX_VALUE;
         int maxY = Integer.MIN_VALUE;
 
@@ -347,12 +343,10 @@ public class Pixel extends JComponent {
             maxY = Math.max(maxY, vertex[1]);
         }
 
-        // Iterar sobre cada línea horizontal y llenar los píxeles entre los puntos extremos
         for (int y = minY; y <= maxY; y++) {
             int x1 = Integer.MAX_VALUE;
             int x2 = Integer.MIN_VALUE;
 
-            // Encontrar intersecciones de la línea horizontal con los segmentos del polígono
             for (int i = 0; i < vertices.length; i++) {
                 int j = (i + 1) % vertices.length;
                 int y1 = vertices[i][1];
@@ -365,10 +359,9 @@ public class Pixel extends JComponent {
                 }
             }
 
-            // Rellenar la línea horizontal entre los puntos extremos
             if (x1 <= x2) {
                 for (int x = x1; x <= x2; x++) {
-                    putPixel(x, y, color); // Reemplaza 'putPixel' con el método apropiado para asignar el color
+                    putPixel(x, y, color); 
                 }
             }
         }
@@ -438,7 +431,6 @@ public class Pixel extends JComponent {
             int pixelX = (int) (x * 10) + 100;
             int pixelY = (int) (y * 10) + 100;
 
-            // Invierte pixelY para dibujar de arriba hacia abajo
             pixelY = getHeight() - pixelY;
 
             putPixel(pixelX, pixelY, ladrillo2);
@@ -506,7 +498,6 @@ public class Pixel extends JComponent {
     //Churro 2D
     public void churro2D() {
         int points = 1000;
-        int scale = 100;
 
         int vp[] = {0, 3, 20};
 
@@ -549,6 +540,50 @@ public class Pixel extends JComponent {
         }
     }
 
+    private void applyProjection(float[] point, float[] projectionMatrix) {
+        float x = point[0];
+        float y = point[1];
+        float z = point[2];
+
+        float w = 1.0f / (1.0f - z / 20.0f);
+
+        point[0] = w * x;
+        point[1] = w * y;
+        point[2] = w * z;
+    }
+
+    public void examen() {
+        int steps = 500;
+        float twoPI = (float) (2 * Math.PI);
+
+        Color red = Color.RED;
+
+        float[] projectionMatrix = {
+            5, 0, 0,
+            0, 1, 0,
+            0, 0, 8
+        };
+
+        for (int i = 0; i <= steps; i++) {
+            float u = 2.5f * ((float) i / steps);
+            for (int j = 0; j <= steps; j++) {
+                float v = twoPI * ((float) j / steps);
+
+                float x = u * (float) Math.cos(v);
+                float y = u * (float) Math.sin(v);
+                float z = u * u;
+
+                float[] point = {x, y, z};
+                applyProjection(point, projectionMatrix);
+
+                int screenX = (int) (point[0] * 50 + (getWidth()/2));
+                int screenY = (int) (point[1] * 50 + (getHeight()/2));
+
+                putPixel(screenX, screenY, red);
+            }
+        }
+    }
+
     //Mallado
     public void drawMeshFromArrayProduct(int[] array1, int[] array2, int meshSpacing, Color color) {
         int rows1 = array1.length;
@@ -584,10 +619,10 @@ public class Pixel extends JComponent {
         if (matrizPixels[x][y] == color) {
             matrizPixels[x][y] = newColor;
 
-            floodFill(x - 1, y, color, newColor); // Izquierda
-            floodFill(x + 1, y, color, newColor); // Derecha
-            floodFill(x, y - 1, color, newColor); // Arriba
-            floodFill(x, y + 1, color, newColor); // Abajo
+            floodFill(x - 1, y, color, newColor);
+            floodFill(x + 1, y, color, newColor);
+            floodFill(x, y - 1, color, newColor);
+            floodFill(x, y + 1, color, newColor);
         }
     }
 
@@ -691,7 +726,7 @@ public class Pixel extends JComponent {
         return (d0 >= 0 && d1 >= 0 && d2 >= 0 && d3 >= 0) || (d0 <= 0 && d1 <= 0 && d2 <= 0 && d3 <= 0);
     }
 
-    //Transformaciones
+    //Transformaciones 2D
     public void translate(int x, int y) {
         if (bufferedImage != null) {
             BufferedImage bufferedTranslate = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);

@@ -20,7 +20,7 @@ public class Project extends Pixel implements ActionListener {
     private int marioX = 0;
     private BufferedImage rotatedSquare;
     private double rotationAngle = 0;
-    
+
     private Traslacion traslacion;
     private Rotacion rotacion;
     private Escalacion escalacion;
@@ -29,7 +29,7 @@ public class Project extends Pixel implements ActionListener {
         traslacion = new Traslacion();
         rotacion = new Rotacion();
         escalacion = new Escalacion();
-        
+
         Timer timer = new Timer(1000, (ActionEvent e) -> {
             currentTime++;
             updateCoinScale();
@@ -397,8 +397,8 @@ public class Project extends Pixel implements ActionListener {
 
         g.drawImage(getBufferedImage(), 0, 0, null);
     }
-    
-    public void dxdy(){
+
+    public void dxdy() {
         traslacion.clear();
         rotacion.clear();
         escalacion.createImage(0, 0);

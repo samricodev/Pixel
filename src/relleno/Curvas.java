@@ -23,16 +23,8 @@ public class Curvas extends Pixel{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         setBackgroundColor(Color.BLACK);
-        
-        //drawInfinitySymbol(100, 200, 80, Color.RED);
-        //drawInvertedWideParabola(400, 100, -0.1, 0.0, -50.0, -50.0, 50.0, 0.1, Color.YELLOW);
-        //drawChurro(5, 30);
         drawHumito();
-        //drawFlor(1000);
-        //drawSol(1000);
-        
         g.drawImage(getBufferedImage(), 0, 0, null);
     }
 }
